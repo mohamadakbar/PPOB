@@ -20,9 +20,7 @@ class MenuHelper{
     }
 
     public static function menus($data, $parent = 0){
-
         static $i = 1;
-
         if (isset($data[$parent])) {
             if($parent == 0) $html = '<ul class="list-unstyled components">';
             else $html = '<ul class="collapse list-unstyled" id="homeSubmenu'.$parent.'">';

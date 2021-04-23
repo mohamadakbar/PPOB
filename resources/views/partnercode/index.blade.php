@@ -33,7 +33,7 @@
 				  <select class="form-control comCor fz13" name="partner" id="partner">
 					<option value="" selected>Choose Partner</option>
 					@foreach($partners as $partner)
-						<option value="{{ $partner->name }}">{{$partner->name}}</option>
+						<option value="{{ $partner->partner_name }}">{{$partner->partner_name}}</option>
 					@endforeach
 				  </select>
 				</div>
@@ -103,7 +103,7 @@
 						<select name="partner" id="a-partner-{{$i}}" class="form-control comCor fz13 partner-list">
 							<option value="" selected>Choose Partner</option>
 							@foreach($partners as $partner)
-								<option value="{{$partner->name}}">{{$partner->name}}</option>
+								<option value="{{$partner->partner_name}}">{{$partner->partner_name}}</option>
 							@endforeach
 						</select>
 						<div class="invalid-feedback">

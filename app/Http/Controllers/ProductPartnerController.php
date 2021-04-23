@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\ProductPartner;
 use App\HistoryTrx;
 use App\User;
+use App\Helpers\MenuHelper;
+use App\Menu;
 use App\AuditTrail;
 use App\Vendor_Response;
 use Session;
@@ -28,60 +30,20 @@ class ProductPartnerController extends Controller
 
     public function __construct()
     {
+        $menu = Menu::orderBy('menu_order', 'ASC')->get();
+        $data = array();
+        foreach ($menu as $order) {
+            $data[$order->parent_id][] = $order;
+        }
+        $this->menu = MenuHelper::menus($data);
         $this->middleware('checkrole');
     }
 
     public function index()
     {
-        $title = " Partners";
-        $menu = DB::table('menu')
-            ->orderBy('menu_order', 'asc')
-            ->get();
-        $data = array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][] = $order;
-        }
-        $menu = $this->menu($data);
+        $title  = " Partners";
+        $menu   = $this->menu;
         return view('prodpartner.index', compact('title', 'menu'));
-    }
-
-    public function menu($data, $parent = 0)
-    {
-
-        static $i = 1;
-        // dd($role);
-        if (isset($data[$parent])) {
-            if ($parent == 0) $html = '<ul class="list-unstyled components">';
-            else $html = '<ul class="collapse list-unstyled" id="homeSubmenu' . $parent . '">';
-            $i++;
-            $checked = "";
-            foreach ($data[$parent] as $v) {
-                $menu = json_decode($_COOKIE['menu']);
-                if (in_array($v->id, $menu)) {
-                    $child = $this->menu($data, $v->id);
-                    $path = explode("/", request()->path());
-                    if (empty($path[1])) $path[1] = 'home';
-                    if ($path[1] == $v->url) $active = 'class="active"'; else $active = '';
-                    $html .= "<li " . $active . ">";
-                    if ($v->url !== '') {
-                        if ($v->url == 'home') $url = url('/');
-                        else $url = route($v->url . '.index');
-                        $html .= '<a href="' . $url . '">' . $v->title . '</a>';
-                    } else {
-                        $html .= '<a href="#homeSubmenu' . $v->id . '" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">' . $v->title . '</a>';
-                    }
-                    if ($child) {
-                        $i--;
-                        $html .= $child;
-                    }
-                    $html .= '</li>';
-                }
-            }
-            $html .= "</ul>";
-            return $html;
-        } else {
-            return false;
-        }
     }
 
     public function getProdpartner(Request $request)
@@ -135,8 +97,6 @@ class ProductPartnerController extends Controller
     public function getBank()
     {
         $bank   = Bank::all();
-
-
     }
 
     /**
@@ -146,17 +106,10 @@ class ProductPartnerController extends Controller
      */
     public function create()
     {
-        $title = " Partners";
-        $gen = "Add";
-        $menu = DB::table('menu')
-            ->orderBy('menu_order', 'asc')
-            ->get();
-        $data = array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][] = $order;
-        }
-        $menu = $this->menu($data);
-        return view('prodpartner.create', compact("title", "gen", "menu", "data"));
+        $title  = " Partners";
+        $gen    = "Add";
+        $menu   = $this->menu;
+        return view('prodpartner.create', compact("title", "gen", "menu"));
     }
 
     public function fetchBank(Request $request){
@@ -175,7 +128,6 @@ class ProductPartnerController extends Controller
 
     public function getCachebody()
     {
-
         //Get cache body type
         $type = Cache::pull('formtype');
         $param = "";
@@ -381,20 +333,10 @@ class ProductPartnerController extends Controller
      */
     public function edit($id)
     {
-        $title = " Partners";
-        $gen = "Edit";
+        $title  = " Partners";
+        $gen    = "Edit";
+        $menu   = $this->menu;
         $prodpartner = ProductPartner::find($id);
-
-//      dd($prodpartner->partner_bank);
-        $menu = DB::table('menu')
-            ->orderBy('menu_order', 'asc')
-            ->get();
-        $data = array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][] = $order;
-        }
-        $menu = $this->menu($data);
-//        dd($prodpartner);
         return view('prodpartner.edit')->with(compact('prodpartner', "title", "gen", "menu"));
     }
 

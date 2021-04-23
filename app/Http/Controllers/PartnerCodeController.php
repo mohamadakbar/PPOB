@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use DB;
 use Session;
 use Excel;
+use App\Helpers\MenuHelper;
+use App\Menu;
 use Illuminate\Http\Request;
 use App\PartnerCode;
 use App\ProductPartner;
@@ -26,62 +28,24 @@ class PartnerCodeController extends Controller
 
     public function __construct()
     {
+      $menu = Menu::orderBy('menu_order', 'ASC')->get();
+        $data = array();
+        foreach ($menu as $order) {
+            $data[$order->parent_id][] = $order;
+        }
+        $this->menu = MenuHelper::menus($data);
       $this->middleware('checkrole');
     }
 
     public function index()
     {
-        $title = " Partner Response Code"; 
-        $menu = DB::table('menu')
-                ->orderBy('menu_order', 'asc')
-                ->get();
-        $data =array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][]=$order;
-        }
-        $partners = ProductPartner::select('name')->get();
-        $sprintCodes = SprintCode::select('status')->get();
-        $menu = $this->menu($data);
+        $title        = " Partner Response Code"; 
+        $menu         = $this->menu;
+        $sprintCodes  = SprintCode::select('status')->get();
+        $partners     = ProductPartner::select('partner_name')->get();
         return view('partnercode.index',compact('title', 'menu', 'partners', 'sprintCodes'));
     }
 
-    public function menu($data, $parent = 0){
-
-      static $i = 1;
-      // dd($role);
-      if (isset($data[$parent])) {
-          if($parent == 0) $html = '<ul class="list-unstyled components">';
-          else $html = '<ul class="collapse list-unstyled" id="homeSubmenu'.$parent.'">';
-          $i++; $checked = "";
-          foreach ($data[$parent] as $v) {
-              $menu = json_decode($_COOKIE['menu']);
-              if (in_array($v->id, $menu)){
-                  $child = $this->menu($data, $v->id);
-                  $path = explode("/", request()->path());
-                  if(empty($path[1])) $path[1] = 'home';
-                  if($path[1] == $v->url) $active = 'class="active"'; else $active = '';
-                  $html .= "<li ".$active.">";
-                  if($v->url!== ''){
-                      if($v->url== 'home') $url = url('/');
-                      else $url = route($v->url.'.index');
-                      $html .= '<a href="'.$url.'">'.$v->title.'</a>';
-                  }else{
-                      $html .= '<a href="#homeSubmenu'.$v->id.'" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">'.$v->title.'</a>';
-                  }
-                  if ($child) {
-                      $i--;
-                      $html .= $child;
-                  }
-                  $html .= '</li>';
-              }
-          }
-          $html .= "</ul>";
-          return $html;
-      } else {
-          return false;
-      }
-    }
-    
 	public function getPartnercode(Request $request)
     {
 		$query = DB::table('sppob_trx.partnerresponsecode');

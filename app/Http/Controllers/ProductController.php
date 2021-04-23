@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use DB;
 use Illuminate\Http\Request;
 use Excel;
+use App\Helpers\MenuHelper;
+use App\Menu;
 use App\AuditTrail;
 use App\Product;
 use App\User;
@@ -25,65 +27,24 @@ class ProductController extends Controller
 
     public function __construct()
     {
+        $menu = Menu::orderBy('menu_order', 'ASC')->get();
+        $data = array();
+        foreach ($menu as $order) {
+            $data[$order->parent_id][] = $order;
+        }
+        $this->menu = MenuHelper::menus($data);
         $this->middleware('checkrole');
     }
 
     public function index()
     {
-        $title = " Manage Product";
-        $menu = DB::table('menu')
-            ->orderBy('menu_order', 'asc')
-            ->get();
-        $data = array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][] = $order;
-        }
-        $menu = $this->menu($data);
+        $title  = " Manage Product";
+        $menu   = $this->menu;
         return view('product.index', compact('title', 'menu'));
-    }
-
-    public function menu($data, $parent = 0)
-    {
-
-        static $i = 1;
-        // dd($role);
-        if (isset($data[$parent])) {
-            if ($parent == 0) $html = '<ul class="list-unstyled components">';
-            else $html = '<ul class="collapse list-unstyled" id="homeSubmenu' . $parent . '">';
-            $i++;
-            $checked = "";
-            foreach ($data[$parent] as $v) {
-                $menu = json_decode($_COOKIE['menu']);
-                if (in_array($v->id, $menu)) {
-                    $child = $this->menu($data, $v->id);
-                    $path = explode("/", request()->path());
-                    if (empty($path[1])) $path[1] = 'home';
-                    if ($path[1] == $v->url) $active = 'class="active"'; else $active = '';
-                    $html .= "<li " . $active . ">";
-                    if ($v->url !== '') {
-                        if ($v->url == 'home') $url = url('/');
-                        else $url = route($v->url . '.index');
-                        $html .= '<a href="' . $url . '">' . $v->title . '</a>';
-                    } else {
-                        $html .= '<a href="#homeSubmenu' . $v->id . '" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">' . $v->title . '</a>';
-                    }
-                    if ($child) {
-                        $i--;
-                        $html .= $child;
-                    }
-                    $html .= '</li>';
-                }
-            }
-            $html .= "</ul>";
-            return $html;
-        } else {
-            return false;
-        }
     }
 
     public function getProduct(Request $request)
     {
-
         $query = Product::with(['ProductCategoryOne', 'ProductTypeOne', 'ProductPartner']);
         if (isset($request->product_type_id)) {
             if ($request->product_type_id != "") {
@@ -137,16 +98,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $title = " Manage Product";
-        $gen = "Add";
-        $menu = DB::table('menu')
-            ->orderBy('menu_order', 'asc')
-            ->get();
-        $data = array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][] = $order;
-        }
-        $menu = $this->menu($data);
+        $title  = " Manage Product";
+        $gen    = "Add";
+        $menu   = $this->menu;
         // $product_type       = DB::table('ppob_config.producttype')->pluck('producttype_name', 'id');
         $product_category   = DB::table('ppob_config.category')->pluck('category_name', 'id');
         $partner    = DB::table('ppob_config.partner')->pluck('partner_name','id');
@@ -164,15 +118,12 @@ class ProductController extends Controller
         $select = $request->get('select');
         $value  = $request->get('value');
         $dep    = $request->get('dependent');
-
         $data   = DB::table('ppob_config.producttype')
                 ->where('producttype_category_id', $value)->get();
-
         foreach ($data as $row){
             $output = '<option value="'.$row->id.'">'.$row->producttype_name.'</option>';
             echo $output;
         }
-
     }
 
     /**
@@ -248,21 +199,13 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $title = " Manage Product";
-        $gen = "Add";
-        $menu = DB::table('menu')
-            ->orderBy('menu_order', 'asc')
-            ->get();
-        $data = array();
-        foreach ($menu as $order) {
-            $data[$order->parent_id][] = $order;
-        }
-        $menu = $this->menu($data);
+        $title  = " Manage Product";
+        $gen    = "Add";
+        $menu   = $this->menu;
         // $product_type       = DB::table('ppob_config.producttype')->pluck('producttype_name', 'id');
         $partner    = DB::table('ppob_config.partner')->pluck('partner_name','id');
         $product    = Product::find($id);
         $product_category   = DB::table('ppob_config.category')->pluck('category_name', 'id');
-//        dd($product_category);
 
         $inq = array(1 => "Inquiry", 2 => "Payment", 3 => "Reversal");
 

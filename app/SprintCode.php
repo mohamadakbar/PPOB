@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SprintCode extends Model
 {
-    protected $connection = "mysql3";
+    protected $connection = "DB_TRX";
     protected $table = 'sprintresponsecode';
 
     protected $fillable = ['responseCode', 'status', 'description'];
