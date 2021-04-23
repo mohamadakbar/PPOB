@@ -1,4 +1,4 @@
 @extends('layouts.sandeza')
 @section('content')
-    tests
+    testing
 @endsection
