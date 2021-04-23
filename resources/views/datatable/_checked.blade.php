@@ -1,0 +1,1 @@
+<input type="checkbox" name="chkid" id="{{ $id }}" class="cbUser filled-in chk-col-light-blue">

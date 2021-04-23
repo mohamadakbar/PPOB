@@ -1,0 +1,1 @@
+<center><a href="{{ $changepass_url }}" class="btn btn-sm btn-info " id="btnChPassword">Change Password</a></center>
