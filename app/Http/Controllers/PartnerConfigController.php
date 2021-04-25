@@ -5,8 +5,14 @@ namespace App\Http\Controllers;
 use App\Helpers\MenuHelper;
 use App\ManageConfig;
 use App\Menu;
+use App\PartnerConfig;
 use DB;
 use Illuminate\Http\Request;
+use App\User;
+use Session;
+use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
+use Yajra\DataTables\Html\Builder;
 
 class PartnerConfigController extends Controller
 {
@@ -32,6 +38,45 @@ class PartnerConfigController extends Controller
         $menu = $this->menu;
 
         return view('partner-config.index',compact('title', 'menu'));
+    }
+
+    public function getPartnerConf(Request $request)
+    {
+        if (!empty($request->partner) && isset($request->partner)) {
+            // dd($request->partner);
+            $query = PartnerConfig::where('partnerconfig_partner_id', $request->partner)->get();
+        }else{
+            $query = PartnerConfig::all();
+        }
+        // if (!empty($request->id) && isset($request->id)){
+        //     $query = ProductCategory::where('id', $request->id)->get();
+        // }
+        // if (!empty($request->id) && isset($request->id) && !empty($request->status) && isset($request->status)) {
+        //     $query = ProductCategory::where('category_active', $request->status)->where('id', $request->id)->get();
+        // }
+        // if (empty($request->status) && empty($request->id)){
+        //     $query = ProductCategory::all();
+        // }
+
+        return Datatables::of($query)
+        ->setRowId('{{$id}}')
+        ->editColumn('author', function($partner) {
+                  $author = explode(" - ", $partner->partnerconfig_created_by);
+                    return $author[0] ;
+        })
+        ->addColumn('action', function($partner){
+          return view('datatable._action', [
+            'edit_url' => route('partner-config.edit', $partner->id),
+            'confirm_message' => 'Sure to delete ' . $partner->partnerconfig_name . '?'
+          ]);
+        })
+        ->addColumn('chkid', function($partner){
+          return view('datatable._checked', [
+            'id' => $partner->id
+          ]);
+        })
+        ->rawColumns(['link', 'action'])
+        ->toJson();
     }
 
     /**

@@ -177,6 +177,7 @@
 
             $('#partner').change(function () {
                 var data = {partner: $("#partner").val()};
+                console.log(data);
                 $('#dataTable').DataTable().destroy();
                 $('#dataTable').DataTable({
 

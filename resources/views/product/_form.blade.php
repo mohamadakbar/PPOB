@@ -1,114 +1,123 @@
-<div class="form-group row p-0 col-md-12 m-b-40">
-    <div class="col-md-2">Method*</div>
-    <div class="row col-md-5">
-        <div class="col-md-4 p-0">
-            <label>
-                {!! Form::radio('method', 'manual', true, ['class'=>'chk-method', 'style'=>'position: relative;left: 0px;opacity: 1;']) !!}
-                Manual
-            </label>
-        </div>
-        <div class="col-md-6 p-0">
-            <label class="fromfile">
-                {!! Form::radio('method', 'fromfile', false, ['class'=>'chk-method fromfile', 'style'=>'position: relative;left: 0px;opacity: 1;']) !!}
-                From File
-            </label>
-        </div>
-    </div>
-</div>
+<style>
+    .chosen-container.chosen-container-multi {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        height: 100%;
+        padding-top: 3%;
+        cursor: pointer;
+    }
 
-<div class="form-group row col-md-12" style="margin-left: 0px;">
-    <div class="form-group row col-md-3]">
-        {!! Form::label('manproduct_partner_id', 'Partner', ['class'=>'control-label text-md-left panel-status']) !!}
-        <div class="col-md-7">
-{{--            {{ $data['partner'] }}--}}
-            <select class="form-control" id="manproduct_partner_id" name="manproduct_partner_id">
-                <option value="">Choose</option>
-                @foreach ($data['partner'] as $cat)
-                    <option value="{{$cat}}"
-                            @if (isset($data['partner']))
-                            selected="selected" @endif
-                    >{{$cat}}</option>
-                @endforeach
-            </select>
-            {!! $errors->first('manproduct_partner_id', '<p class="help-block">:message</p>') !!}
-        </div>
-    </div>
+    .padding-td-table {
+        padding-right: 20px;
+        padding-bottom: 20px;
+    }
 
-    <div class="form-group row col-md-3]">
-        {!! Form::label('manproduct_method', 'Prod Method', ['class'=>'control-label text-md-left panel-status']) !!}
-        <div class="col-md-6">
-            <select class="form-control" name="manproduct_method" id="manproduct_method" multiple="">
-                <option value="1">Inq</option>
-                <option value="2">Payment</option>
-                <option value="3">Reversal</option>
-            </select>
-            {!! $errors->first('manproduct_method', '<p class="help-block">:message</p>') !!}
-        </div>
-    </div>
+    .padding-thead-table {
+        padding-bottom: 30px;
+    }
 
-    {{--                    {{ dd($data['product_category']) }}--}}
-    <div class="form-group row col-md-3">
-        {!! Form::label('manproduct_category_id', 'Category', ['class'=>'control-label text-md-left panel-status']) !!}
-        <div class="col-md-8">
-            <select class="form-control dynamic" id="manproduct_category_id" name="manproduct_category_id"
-                    data-dependent="manproduct_type_id">
-                <option value="">Choose</option>
-                @foreach ($data['product_category'] as $id => $name)
-                    <option value="{{$id}}"
-                        @if (isset($product))
-                            selected="selected"
-                        @endif
-                    >{{$name}}</option>
-                @endforeach
-            </select>
+    .sweet-alert h2 {
+        font-size: 20px;
+        margin: 20px 0;
+        line-height: 20px;
+    }
 
-            {{--            <select class="form-control" id="manproduct_partner_id" name="manproduct_partner_id">--}}
-            {{--                <option value="">Choose</option>--}}
-            {{--                @foreach ($data['product_category'] as  $cat)--}}
-            {{--                        <option value="{{ $cat->id }}"--}}
-            {{--                                @if (isset($data['product_category']))--}}
-            {{--                                selected="selected" @endif--}}
-            {{--                        >{{ $cat->category_name }}</option>--}}
-            {{--                @endforeach--}}
-            {{--            </select>--}}
-            {!! $errors->first('manproduct_category_id', '<p class="help-block">:message</p>') !!}
-        </div>
-    </div>
+    .invalid-feedback {
+        padding-top: 0px !important;
+        position: absolute;
+    }
 
+</style>
+<div class="panel panel-default">
+    
+    <div class="row col-md-9 p-0 m-b-10">
+        <div class="col-sm-12 m-t-30 row">
+            <div class="col-md-2">Method*</div>
+            <div class="row col-md-5 m-b-30">
+                <div class="col-md-4 p-0">
+                    <label>
+                        {!! Form::radio('method', 'manual', true, ['class'=>'chk-method', 'style'=>'position: relative;left:
+                        0px;opacity: 1;']) !!}
+                        Manual
+                    </label>
+                </div>
+                <div class="col-md-6 p-0">
+                    <label class="fromfile">
+                        {!! Form::radio('method', 'fromfile', false, ['class'=>'chk-method fromfile', 'style'=>'position:
+                        relative;left: 0px;opacity: 1;']) !!}
+                        From File
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-12"></div>
+            <div class="col-md-12"></div>
+            <label for="name" class="col-md-1 control-label panel-status">Partner</label>
+            <div class="col-md-3 m-b-30">
+                {!! Form::select('manproduct_partner_id', App\ProductPartner::pluck('partner_name','id')->all(), null, ['class'=>'js-selectize form-control','placeholder' => '--- Choose ---', 'id' => 'manproduct_partner_id']) !!}
+            </div>
+            <label for="sprint-status" class="col-md-2 p-r-0 p-t-10 control-label text-md-left">Prod Method</label>
+            <div class="col-md-3 m-b-30">
+                <select class="form-control fz13" name="sprintstatus" id="manproduct_method" multiple>
+                    @isset($expl)
+                        @foreach($expl as $item)
+                            $@if ($item == 1)
+                                <option value="{{$item}}" selected>Inquiry</option>
+                            @elseif($item == 2)
+                                <option value="{{$item}}" selected>Payment</option>
+                            $@elseif($item == 3)
+                                <option value="{{$item}}" selected>Rev</option>
+                            @endif
+                        @endforeach
+                    @endisset
+                    <option value="1">Inquiry</option>
+                    <option value="2">Payment</option>
+                    <option value="3">Reversal</option>
+                    {{-- <option value="">Payment</option>
+                    <option value="">Reversal</option> --}}
+                </select>
+                {{-- {!! Form::select('manproduct_active', $expl, null, ['class'=>'form-control fz13', 'id' => 'manproduct_method', 'multiple']); !!} --}}
+            </div>
+            <div class="col-md-12"></div>
+            {!! Form::label('manproduct_category_id', 'Category', ['class'=>'col-md-1 control-label panel-status']) !!}
+            <div class="col-md-3 m-b-30">
+                {!! Form::select('manproduct_category_id', App\ProductCategory::pluck('category_name', 'id')->all(), null, ['class'=>'js-selectize form-control dynamic','placeholder' => '--- Choose ---', 'id' => 'manproduct_category_id', 'data-dependent' => 'manproduct_type_id']) !!}
+                {!! $errors->first('manproduct_category_id', '<p class="help-block">:message</p>') !!}
+            </div>
+            {!! Form::label('manproduct_type_id', 'Product Type', ['class'=>'col-md-1 p-r-0 p-t-00 control-label
+            text-md-left']) !!}
+            <div class="col-md-3 m-b-30">
+                {!! Form::select('manproduct_type_id', App\ProductType::pluck('producttype_name', 'id')->all(), null, ['class'=>'js-selectize form-control','placeholder' => '--- Choose ---', 'id' => 'manproduct_type_id']) !!}
+                {!! $errors->first('manproduct_type_id', '<p class="help-block">:message</p>') !!}
+            </div>
+            {{ csrf_field() }}
 
-    <div class="form-group row col-md-3">
-        {!! Form::label('manproduct_type_id', 'Product Type', ['class'=>'control-label text-md-left panel-status']) !!}
-        <div class="col-md-7">
-            <select class="form-control" id="manproduct_type_id" name="manproduct_type_id">
-                <option value="">Choose</option>
-            </select>
-        </div>
-    </div>
-    {{ csrf_field() }}
-    <div class="form-group row col-md-3">
-        {!! Form::label('manproduct_active', 'Status', ['class'=>'control-label text-md-left panel-status']) !!}
-        <div class="col-md-7">
-            {!! Form::select('manproduct_active', array('' => 'Choose', '1' => 'Active', '2' => 'Inactive'), null, ['class'=>'form-control']); !!}
-            {!! $errors->first('manproduct_active', '<p class="help-block">:message</p>') !!}
+            {!! Form::label('manproduct_active', 'Status', ['class'=>'col-md-1 control-label panel-status']) !!}
+            <div class="col-md-2 m-b-30">
+                {!! Form::select('manproduct_active', array('' => 'Choose', '1' => 'Active', '2' => 'Inactive'), null,
+                ['class'=>'form-control']); !!}
+                {!! $errors->first('manproduct_active', '<p class="help-block">:message</p>') !!}
+            </div>
+
         </div>
     </div>
 </div>
 
 <div class="content-chk" id="manual">
-
     <div class="row col-md-9 m-b-10 p-0">
         <div class="col-md-6 row">
-            {!! Form::label('manproduct_name', 'Product Name', ['class'=>'col-md-5 p-r-0 p-t-10 control-label text-md-left']) !!}
+            {!! Form::label('manproduct_name', 'Product Name', ['class'=>'col-md-5 p-r-0 p-t-10 control-label
+            text-md-left']) !!}
             <div class="col-md-7 p-l-0">
                 <input type="text" name="manproduct_name" id="manproduct_name" class="form-control"
-                       autofocus="autofocus"
-                       value="@if(isset($product->manproduct_name)){{ $product->manproduct_name }} @endif">
+                    autofocus="autofocus"
+                    value="@if(isset($product->manproduct_name)){{ $product->manproduct_name }} @endif">
                 {!! $errors->first('manproduct_name', '<p class="help-block">:message</p>') !!}
             </div>
         </div>
 
         <div class="col-md-6 row p-l-0">
-            {!! Form::label('manproduct_code', 'Product Code', ['class'=>'col-md-4 p-r-5 p-t-10 control-label text-md-left']) !!}
+            {!! Form::label('manproduct_code', 'Product Code', ['class'=>'col-md-4 p-r-5 p-t-10 control-label
+            text-md-left']) !!}
             <div class="col-md-8 p-l-0">
                 {!! Form::text('manproduct_code', null, ['class'=>'form-control','autofocus'=>'autofocus']) !!}
                 {{--                {!! Form::text('partner_norek', null, ['class'=>'form-control','autofocus'=>'autofocus']) !!}--}}
@@ -119,17 +128,21 @@
 
     <div class="row col-md-9 m-b-10 p-0">
         <div class="col-md-6 row">
-            {!! Form::label('manproduct_price_cashback', 'Cashback', ['class'=>'col-md-5 p-r-0 p-t-10 control-label text-md-left']) !!}
+            {!! Form::label('manproduct_price_cashback', 'Cashback', ['class'=>'col-md-5 p-r-0 p-t-10 control-label
+            text-md-left']) !!}
             <div class="col-md-7 p-l-0">
-                {!! Form::text('manproduct_price_cashback', null, ['class'=>'form-control','autofocus'=>'autofocus', 'placeholder'=>'Rp.']) !!}
+                {!! Form::text('manproduct_price_cashback', null, ['class'=>'form-control','autofocus'=>'autofocus',
+                'placeholder'=>'Rp.']) !!}
                 {!! $errors->first('manproduct_price_cashback', '<p class="help-block">:message</p>') !!}
             </div>
         </div>
 
         <div class="col-md-6 row p-l-0">
-            {!! Form::label('manproduct_expired', 'Until', ['class'=>'col-md-4 p-r-5 p-t-10 control-label text-md-left']) !!}
+            {!! Form::label('manproduct_expired', 'Until', ['class'=>'col-md-4 p-r-5 p-t-10 control-label
+            text-md-left']) !!}
             <div class="col-md-8 p-l-0">
-                {!! Form::date('manproduct_expired', null, ['class'=>'form-control','autofocus'=>'autofocus', 'placeholder'=>'Rp.']) !!}
+                {!! Form::date('manproduct_expired', null, ['class'=>'form-control','autofocus'=>'autofocus',
+                'placeholder'=>'Rp.']) !!}
                 {!! $errors->first('manproduct_expired', '<p class="help-block">:message</p>') !!}
             </div>
         </div>
@@ -137,16 +150,20 @@
 
     <div class="row col-md-9 m-b-10 p-0">
         <div class="col-md-6 row">
-            {!! Form::label('manproduct_price_buttom', 'Bottom Price', ['class'=>'col-md-5 p-r-0 p-t-10 control-label text-md-left']) !!}
+            {!! Form::label('manproduct_price_buttom', 'Bottom Price', ['class'=>'col-md-5 p-r-0 p-t-10 control-label
+            text-md-left']) !!}
             <div class="col-md-7 p-l-0">
-                {!! Form::text('manproduct_price_buttom', null, ['class'=>'form-control','autofocus'=>'autofocus', 'placeholder'=>'Rp.']) !!}
+                {!! Form::text('manproduct_price_buttom', null, ['class'=>'form-control','autofocus'=>'autofocus',
+                'placeholder'=>'Rp.']) !!}
                 {!! $errors->first('manproduct_price_buttom', '<p class="help-block">:message</p>') !!}
             </div>
         </div>
         <div class="col-md-6 row p-l-0">
-            {!! Form::label('manproduct_price_denom', 'Denom', ['class'=>'col-md-4 p-r-5 p-t-10 control-label text-md-left']) !!}
+            {!! Form::label('manproduct_price_denom', 'Denom', ['class'=>'col-md-4 p-r-5 p-t-10 control-label
+            text-md-left']) !!}
             <div class="col-md-8 p-l-0">
-                {!! Form::text('manproduct_price_denom', null, ['class'=>'form-control','autofocus'=>'autofocus', 'placeholder'=>'Rp.']) !!}
+                {!! Form::text('manproduct_price_denom', null, ['class'=>'form-control','autofocus'=>'autofocus',
+                'placeholder'=>'Rp.']) !!}
                 {!! $errors->first('manproduct_price_denom', '<p class="help-block">:message</p>') !!}
             </div>
         </div>
@@ -166,21 +183,21 @@
 
 <div class="content-chk" id="fromfile" style="display:none;">
     @if(count($errors) > 0)
-        <div class="alert alert-danger">
-            Upload Validation Error<br><br>
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    <div class="alert alert-danger">
+        Upload Validation Error<br><br>
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
     @endif
 
     @if($message = Session::get('success'))
-        <div class="alert alert-success alert-block">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong>{{ $message }}</strong>
-        </div>
+    <div class="alert alert-success alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>{{ $message }}</strong>
+    </div>
     @endif
     <form method="post" enctype="multipart/form-data" action="{!! route('productUpload') !!}">
         {{ csrf_field() }}
@@ -189,7 +206,7 @@
                 <tr>
                     <td width="40%" align="right"><label>Select File for Upload</label></td>
                     <td width="30">
-                        <input type="file" name="select_file"/>
+                        <input type="file" name="select_file" />
                     </td>
                     <td width="30%" align="left">
                         <input type="submit" name="upload" class="btn btn-primary" value="Upload">
@@ -214,6 +231,11 @@
 
 <script>
     $(document).ready(function () {
+        $("#manproduct_method").chosen({
+            width: '100%'
+        });
+        $("#manproduct_method").chosen();
+		$('#manproduct_method').trigger("chosen:updated");
         $('.dynamic').change(function () {
             if ($(this).val() != "") {
                 var select = $(this).attr("id");
@@ -224,7 +246,12 @@
                 $.ajax({
                     url: "{{ route('dynamicdependent.fetch') }}",
                     method: "POST",
-                    data: {select: select, value: value, dependent: dependent, _token: _token},
+                    data: {
+                        select: select,
+                        value: value,
+                        dependent: dependent,
+                        _token: _token
+                    },
                     success: function (result) {
                         $('#manproduct_type_id').append(result);
                     }
@@ -235,17 +262,17 @@
                 .remove()
                 .end()
                 .append('<option value="">Choose</option>')
-                .val('whatever')
-            ;
+                .val('whatever');
         });
     });
+
 </script>
 
 <script>
-
     $('#manproduct_name, #manproduct_code, #manproduct_partner_id').keypress(function (event) {
         var inputValue = event.charCode;
-        if (!((inputValue > 64 && inputValue < 91) || (inputValue > 96 && inputValue < 123) || (inputValue >= 48 && inputValue <= 57) || (inputValue == 32) || (inputValue == 0))) {
+        if (!((inputValue > 64 && inputValue < 91) || (inputValue > 96 && inputValue < 123) || (inputValue >=
+                48 && inputValue <= 57) || (inputValue == 32) || (inputValue == 0))) {
             event.preventDefault();
         }
     });
@@ -259,7 +286,9 @@
     // setTimeout(function(){$('#inqType,#categoryId,#productTypeId').chosen();},2000);
     // setTimeout(function(){$('#inqType,#categoryId').chosen();},2000);
 
-    $('#manproduct_price_buttom, #manproduct_price_cashback, #manproduct_price_denom, #adminFee').mask('000.000.000', {reverse: true});
+    $('#manproduct_price_buttom, #manproduct_price_cashback, #manproduct_price_denom, #adminFee').mask('000.000.000', {
+        reverse: true
+    });
 
     $('.chk-method').change(function () {
 
@@ -489,4 +518,5 @@
             }
         });
     });
+
 </script>

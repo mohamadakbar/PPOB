@@ -207,8 +207,20 @@ Route::group(['prefix'=>'adminpanel', 'middleware'=>['auth', 'role:Administrator
   Route::post('getauditbyfilter', 'AuditTrailController@getauditbyfilter')->name('get.audit-filter');
   Route::get('exportaudit', 'AuditTrailController@exportaudit')->name('get.audit-export');
 
-  // Manage config
+  // Partner config
   Route::resource('partner-config','PartnerConfigController');
+  Route::any('partnerconfig', 'PartnerConfigController@getPartnerConf')->name('get.partnerconf');
+  
+  // Status Config
+  Route::resource('status-config','StatusConfigController');
+  
+  // Product Client Config
+  Route::resource('prodclient-config','ProdClientConfigController');
+  // Route::resource('prodcat','ProductCatController');
+  // Route::any('allprodcat', 'ProductCatController@show')->name('allprodcat');
+  // Route::post('prodcat/store','ProductCatController@store')->name('prodcat.link');
+  // Route::post('prodcat/update/{id}','ProductCatController@update');
+  // Route::any('deleteprodcat/{id}', 'ProductCatController@deleteprodcat');
 });
 
 

@@ -102,8 +102,8 @@ class ProductController extends Controller
         $gen    = "Add";
         $menu   = $this->menu;
         // $product_type       = DB::table('ppob_config.producttype')->pluck('producttype_name', 'id');
+        $partner            = DB::table('ppob_config.partner')->pluck('partner_name','id');
         $product_category   = DB::table('ppob_config.category')->pluck('category_name', 'id');
-        $partner    = DB::table('ppob_config.partner')->pluck('partner_name','id');
 
         $inq = array(1 => "Inquiry", 2 => "Payment", 3 => "Reversal");
 
@@ -203,8 +203,14 @@ class ProductController extends Controller
         $gen    = "Add";
         $menu   = $this->menu;
         // $product_type       = DB::table('ppob_config.producttype')->pluck('producttype_name', 'id');
-        $partner    = DB::table('ppob_config.partner')->pluck('partner_name','id');
-        $product    = Product::find($id);
+        $partner            = DB::table('ppob_config.partner')->pluck('partner_name','id');
+        $product            = Product::with('ProductPartner')->find($id);
+        $expl = explode(":;:", $product->manproduct_method);
+        
+        // dd($expl);
+        // foreach($expl as $item){
+        //     echo $item;
+        // }
         $product_category   = DB::table('ppob_config.category')->pluck('category_name', 'id');
 
         $inq = array(1 => "Inquiry", 2 => "Payment", 3 => "Reversal");
@@ -212,7 +218,7 @@ class ProductController extends Controller
         //$data = array('product_type' => $product_type, 'product_category' => $product_category, 'product_partner' => $product_partner, 'inqType' => $inq);
         // $data = array('product_type' => $product_type, 'product_category' => $product_category, 'inqType' => $inq, 'partner' => $partner);
         $data = array('product_category' => $product_category, 'inqType' => $inq, 'partner' => $partner);
-        return view('product.edit', compact("product","title", "gen", "menu", "data"));
+        return view('product.edit', compact("product","title", "gen", "menu", "data"), ['expl' => $expl]);
     }
 
     /**
