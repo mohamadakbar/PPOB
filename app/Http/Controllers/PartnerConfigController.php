@@ -89,7 +89,7 @@ class PartnerConfigController extends Controller
      */
     public function create()
     {
-        // return "";
+        
     }
 
     /**
