@@ -46,7 +46,7 @@ class PartnerConfigController extends Controller
             // dd($request->partner);
             $query = PartnerConfig::where('partnerconfig_partner_id', $request->partner)->get();
         }else{
-            $query = PartnerConfig::all();
+            $query = PartnerConfig::with('Partner');
         }
         // if (!empty($request->id) && isset($request->id)){
         //     $query = ProductCategory::where('id', $request->id)->get();
@@ -63,6 +63,9 @@ class PartnerConfigController extends Controller
         ->editColumn('author', function($partner) {
                   $author = explode(" - ", $partner->partnerconfig_created_by);
                     return $author[0] ;
+        })
+        ->editColumn('partnerconfig_partner_id', function ($partner) {
+            return $partner->partner->partner_name;
         })
         ->addColumn('action', function($partner){
           return view('datatable._action', [
@@ -86,7 +89,7 @@ class PartnerConfigController extends Controller
      */
     public function create()
     {
-        //
+        // return "";
     }
 
     /**
@@ -117,9 +120,16 @@ class PartnerConfigController extends Controller
      * @param  \App\ManageConfig  $manageConfig
      * @return \Illuminate\Http\Response
      */
-    public function edit(ManageConfig $manageConfig)
+    public function edit($id)
     {
-        //
+        // return $id;
+        // return " sini";
+        $title      = " Partner Config";
+        $menu       = $this->menu;
+        $partner    = PartnerConfig::with('Partner')->find($id);
+        // return $partner;
+
+        return view('partner-config.edit',compact('partner','title', 'menu'));
     }
 
     /**

@@ -210,6 +210,7 @@ Route::group(['prefix'=>'adminpanel', 'middleware'=>['auth', 'role:Administrator
   // Partner config
   Route::resource('partner-config','PartnerConfigController');
   Route::any('partnerconfig', 'PartnerConfigController@getPartnerConf')->name('get.partnerconf');
+  Route::post('partnerconfig/update/{id}','PartnerConfigController@update')->name('partnerconfig.update');
   
   // Status Config
   Route::resource('status-config','StatusConfigController');

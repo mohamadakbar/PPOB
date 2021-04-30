@@ -17,7 +17,7 @@ class PartnerConfig extends Model
         'partnerconfig_tipe',
         'partnerconfig_tipe_name',
         'partnerconfig_protocol',
-        'artnerconfig_method',
+        'partnerconfig_method',
         'partnerconfig_url',
         'partnerconfig_bodytype',
         'partnerconfig_auth',
@@ -31,4 +31,9 @@ class PartnerConfig extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function Partner()
+    {
+        return $this->hasOne('App\ProductPartner', 'id', 'partnerconfig_partner_id');
+    }
 }

@@ -20,7 +20,7 @@
                 <br>
                 <br>
             </div>
-            <a id="btnNew" class="btn btn-info fz13 btn-sm" href="{{ route('prodcat.create') }}">New</a>
+            <a id="btnNew" class="btn btn-info fz13 btn-sm" href="{{ route('partner-config.create') }}">New</a>
             <a id="btnDelete" class="btn btn-info fz13 btn-sm" href="javascript:void(0)">Delete</a>
             <table class="table table-striped table-sm table-bordered table-hover" id="dataTable" style="width:100%">
                 <thead>
@@ -43,6 +43,7 @@
                 <th>Status</th>
                 <th>Created At</th>
                 <th width="7%">Action</th>
+                <th width="7%">Action</th>
                 </thead>
                 <tfoot>
                 <tr class="bold">
@@ -61,6 +62,7 @@
                     <th>Resp Type Header</th>
                     <th>Status</th>
                     <th>Created At</th>
+                    <th width="7%">Action</th>
                     <th width="7%">Action</th>
                 </tr>
                 </tfoot>
@@ -87,10 +89,10 @@
                 columns: [
                     {data: 'chkid', name: 'chkid'},
                     {data: 'partnerconfig_name', name: 'partnerconfig_name'},
-                    {data: 'partnerconfig_partner_name', name: 'partnerconfig_partner_name'},
+                    {data: 'partnerconfig_partner_id', name: 'partnerconfig_partner_id'},
                     {data: 'partnerconfig_tipe_name', name: 'partnerconfig_tipe_name'},
                     {data: 'partnerconfig_protocol', name: 'partnerconfig_protocol'},
-                    {data: 'artnerconfig_method', name: 'artnerconfig_method'},
+                    {data: 'partnerconfig_method', name: 'partnerconfig_method'},
                     {data: 'partnerconfig_url', name: 'partnerconfig_url'},
                     {data: 'partnerconfig_bodytype', name: 'partnerconfig_bodytype'},
                     {data: 'partnerconfig_auth', name: 'partnerconfig_auth'},
@@ -109,7 +111,8 @@
                             }
 
                         }, name: 'partnerconfig_active'
-                    }
+                    },
+                    {data: 'action', name: 'action'}
                 ],
                 columnDefs: [
                     {"targets": [0, 2], "searchable": false, "orderable": false, "visible": true}
@@ -119,7 +122,6 @@
 
             $('#partner').change(function () {
                 var data = {partner: $("#partner").val()};
-                console.log(data);
                 $('#dataTable').DataTable().destroy();
                 $('#dataTable').DataTable({
                     processing: true,
@@ -135,10 +137,10 @@
                     columns: [
                         {data: 'chkid', name: 'chkid'},
                         {data: 'partnerconfig_name', name: 'partnerconfig_name'},
-                        {data: 'partnerconfig_partner_name', name: 'partnerconfig_partner_name'},
+                        {data: 'partnerconfig_partner_id', name: 'partnerconfig_partner_id'},
                         {data: 'partnerconfig_tipe_name', name: 'partnerconfig_tipe_name'},
                         {data: 'partnerconfig_protocol', name: 'partnerconfig_protocol'},
-                        {data: 'artnerconfig_method', name: 'artnerconfig_method'},
+                        {data: 'partnerconfig_method', name: 'partnerconfig_method'},
                         {data: 'partnerconfig_url', name: 'partnerconfig_url'},
                         {data: 'partnerconfig_bodytype', name: 'partnerconfig_bodytype'},
                         {data: 'partnerconfig_auth', name: 'partnerconfig_auth'},
@@ -157,7 +159,8 @@
                                 }
 
                             }, name: 'partnerconfig_active'
-                        }
+                        },
+                        {data: 'action', name: 'action'}
                     ],
                     columnDefs: [
                         {"targets": [0, 2], "searchable": false, "orderable": false, "visible": true}

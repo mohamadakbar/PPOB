@@ -18,6 +18,11 @@ class ProductPartner extends Model
         return $this->hasMany('App\Product');
     }
 
+    public function partner()
+    {
+        return $this->hasMany('App\ProductPartner');
+    }
+
     public function getBank()
     {
         return $this->hasOne('App\Bank', 'id', 'partner_bank');
